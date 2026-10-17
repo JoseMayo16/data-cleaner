@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data-cleaner"
+version = "1.0.0"
+description = "Clean messy CSV and Excel files: whitespace, emails, phones, dates, numbers, names, categories and duplicates."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = ["openpyxl>=3.1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=9", "ruff>=0.17"]
+
+[project.scripts]
+data-cleaner = "data_cleaner.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
