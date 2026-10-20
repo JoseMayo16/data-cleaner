@@ -10,7 +10,8 @@ dates in every format. This tool fixes what can be fixed safely, flags what can'
 every single change so nothing happens behind your back.
 
 **Live demo: https://josemayo16.github.io/data-cleaner/** (no sign-up, no upload: the file is
-processed inside your browser tab)
+processed inside your browser tab). To jump straight to the results with a messy sample, open
+[`?sample=crm-contacts.csv&run=1`](https://josemayo16.github.io/data-cleaner/?sample=crm-contacts.csv&run=1).
 
 ![Demo](docs/demo.jpg)
 

@@ -74,6 +74,16 @@
     else label.textContent = m.text + "…";
   }
 
+  // --- progress in the toolbar ----------------------------------------------------------
+
+  function setStep(n) {
+    [1, 2, 3].forEach(function (i) {
+      var li = $("step-" + i);
+      li.classList.toggle("is-current", i === n);
+      li.classList.toggle("is-done", i < n);
+    });
+  }
+
   // --- step 1: load ----------------------------------------------------------------------
 
   function showLoadError(text) { $("load-error").textContent = text; $("load-error").hidden = !text; }
@@ -107,14 +117,15 @@
   ["dragleave", "drop"].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove("over"); }); });
   drop.addEventListener("drop", function (e) { if (e.dataTransfer.files[0]) readFile(e.dataTransfer.files[0]); });
 
-  document.querySelectorAll("[data-sample]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      var name = b.dataset.sample;
-      fetch("samples/" + name).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
-        setOptions(SAMPLE_OPTIONS[name]);
-        loadBytes(new Uint8Array(buf), name);
-      });
+  function openSample(name) {
+    return fetch("samples/" + name).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
+      setOptions(SAMPLE_OPTIONS[name]);
+      return loadBytes(new Uint8Array(buf), name);
     });
+  }
+
+  document.querySelectorAll("[data-sample]").forEach(function (b) {
+    b.addEventListener("click", function () { openSample(b.dataset.sample); });
   });
 
   // --- step 2: review ----------------------------------------------------------------------
@@ -122,7 +133,10 @@
   function renderReview(sheet) {
     $("review").hidden = false;
     $("results").hidden = true;
-    $("review-title").textContent = "Review the columns of " + file.name + " (" + fmt(loaded.rows) + " rows)";
+    $("review-title").textContent = fmt(loaded.columns.length) + " columns, " + fmt(loaded.rows) + " rows";
+    $("file-name").textContent = file.name;
+    $("file-name").hidden = false;
+    setStep(2);
 
     var wrap = $("sheet-wrap"), select = $("sheet");
     wrap.hidden = loaded.sheets.length < 2;
@@ -147,6 +161,8 @@
   $("sheet").addEventListener("change", function () { loadBytes(file.bytes, file.name, this.value); });
   $("reset").addEventListener("click", function () {
     $("review").hidden = true; $("results").hidden = true;
+    $("file-name").hidden = true;
+    setStep(1);
     $("start").scrollIntoView({ behavior: "smooth" });
   });
 
@@ -173,8 +189,8 @@
   // --- step 3: results ---------------------------------------------------------------------
 
   function tile(label, value, sub) {
-    return el("div", { class: "tile" }, [el("div", { class: "tile-label", text: label }),
-      el("div", { class: "tile-value", text: value }), el("div", { class: "tile-sub", text: sub })]);
+    return el("div", { class: "stat" }, [el("div", { class: "stat-value", text: value }),
+      el("div", { class: "stat-label", text: label }), el("div", { class: "stat-sub", text: sub })]);
   }
 
   function cleanShare(r) {
@@ -187,6 +203,7 @@
   function renderResults() {
     var r = result;
     $("results").hidden = false;
+    setStep(3);
     var touched = r.columns.filter(function (c) { return c.changed; }).length;
     $("kpis").replaceChildren(
       tile("Rows", fmt(r.rows_in) + " → " + fmt(r.rows_out), r.duplicates.length + " duplicates " + ($("opt-dups").value === "remove" ? "removed" : "found")),
@@ -303,6 +320,14 @@
       }).catch(function (err) { alert("Export failed: " + err.message); });
     });
   });
+
+  // Shareable demo links: ?sample=crm-contacts.csv opens a sample, &run=1 also cleans it.
+  var params = new URLSearchParams(location.search);
+  if (SAMPLE_OPTIONS[params.get("sample")]) {
+    openSample(params.get("sample")).then(function () {
+      if (params.get("run") === "1" && loaded) $("run").click();
+    });
+  }
 
   $("theme").addEventListener("click", function () {
     var root = document.documentElement;

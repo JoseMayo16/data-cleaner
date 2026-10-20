@@ -13,109 +13,127 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e7490'/%3E%3Cpath d='M8 10h16M8 16h16M8 22h10' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M21 21l2.2 2.2L27 19' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23111214'/%3E%3Cpath d='M8 10h16M8 16h16M8 22h10' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M21 21l2.2 2.2L27 19' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="styles.css">
 <script>
   try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
 </script>
 </head>
 <body>
-<header class="top">
-  <div class="wrap top-inner">
+<header class="toolbar">
+  <div class="toolbar-inner">
     <a class="brand" href="./">Data Cleaner</a>
-    <div class="top-actions">
+    <span class="file-name" id="file-name" hidden></span>
+    <ol class="steps" aria-label="Progress">
+      <li id="step-1" class="is-current"><span>1</span> Open</li>
+      <li id="step-2"><span>2</span> Columns</li>
+      <li id="step-3"><span>3</span> Results</li>
+    </ol>
+    <div class="toolbar-end">
       <span class="engine" id="engine"><i></i><span>Loading the Python engine</span></span>
-      <a class="ghost-btn" href="https://github.com/JoseMayo16/data-cleaner">GitHub</a>
-      <button type="button" class="icon-btn" id="theme" aria-label="Toggle theme" title="Toggle theme">
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="sun" d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66 1.41-1.41M4.93 19.07l1.41-1.41m0-11.32L4.93 4.93m14.14 14.14-1.41-1.41M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"/><path class="moon" d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/></svg>
+      <a class="tool-btn" href="https://github.com/JoseMayo16/data-cleaner">Source</a>
+      <button type="button" class="tool-btn icon" id="theme" aria-label="Toggle theme" title="Toggle theme">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path class="sun" d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66 1.41-1.41M4.93 19.07l1.41-1.41m0-11.32L4.93 4.93m14.14 14.14-1.41-1.41M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"/><path class="moon" d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/></svg>
       </button>
     </div>
   </div>
 </header>
 
-<main class="wrap">
-  <section class="hero" id="start">
-    <div class="hero-copy">
-      <h1>Clean messy spreadsheets in seconds.</h1>
-      <p class="lead">Duplicate rows, five spellings of the same city, broken emails, phones and dates in every format. Fixed in your browser, with a record of every change you can check. <strong>Your file never leaves your computer.</strong></p>
-      <ul class="ticks">
-        <li>CSV and Excel, any delimiter or encoding</li>
-        <li>Spanish and English data, local date and number formats</li>
-        <li>Download the clean file plus an audit of every change</li>
-      </ul>
+<main class="workspace">
+  <section class="open" id="start">
+    <div class="open-intro">
+      <h1>Open a messy spreadsheet</h1>
+      <p class="lead">Duplicate rows, five spellings of the same city, broken emails, phones and dates in every format. Each fix is logged, so you can check it. The file is processed on this computer and never uploaded.</p>
     </div>
+
     <div class="dropzone" id="drop">
       <input type="file" id="file" accept=".csv,.tsv,.txt,.xlsx,.xlsm" hidden>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4m0 0-4 4m4-4 4 4M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
-      <button type="button" class="primary" id="pick">Choose a CSV or Excel file</button>
-      <span class="muted">or drop it here</span>
-      <div class="samples">
-        <span class="muted">Or try a messy sample:</span>
-        <button type="button" class="chip" data-sample="crm-contacts.csv">CRM contacts <small>CSV, Spanish</small></button>
-        <button type="button" class="chip" data-sample="sales-orders.xlsx">Sales orders <small>Excel, US</small></button>
-      </div>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M12 18v-6m0 0-2.5 2.5M12 12l2.5 2.5"/></svg>
+      <p class="drop-title">Drop a CSV or Excel file here</p>
+      <button type="button" class="btn btn-primary" id="pick">Choose file…</button>
+      <p class="hint">.csv · .tsv · .xlsx · any delimiter or encoding</p>
       <p class="error" id="load-error" hidden></p>
+    </div>
+
+    <div class="recent">
+      <p class="recent-title">Sample files</p>
+      <ul>
+        <li><button type="button" class="file-row" data-sample="crm-contacts.csv">
+          <span class="file-icon">CSV</span>
+          <span class="file-main"><strong>crm-contacts.csv</strong><span>CRM export in Spanish: duplicates, mixed phones and dates</span></span>
+          <span class="file-open">Open</span>
+        </button></li>
+        <li><button type="button" class="file-row" data-sample="sales-orders.xlsx">
+          <span class="file-icon xls">XLSX</span>
+          <span class="file-main"><strong>sales-orders.xlsx</strong><span>US sales orders: currency symbols, spelling variants</span></span>
+          <span class="file-open">Open</span>
+        </button></li>
+      </ul>
     </div>
   </section>
 
-  <section class="card" id="review" hidden>
-    <header class="card-head">
+  <section class="panel" id="review" hidden>
+    <header class="panel-head">
       <div>
-        <p class="step">Step 2 of 3</p>
-        <h2 id="review-title">Review the columns</h2>
-        <p class="caption">Each column was recognized automatically. Change the type if a guess is wrong; <em>Text</em> and <em>ID</em> columns are only trimmed.</p>
+        <h2 id="review-title">Columns</h2>
+        <p class="caption">Each column's type was detected. Change it if a guess is wrong; <em>Text</em> and <em>ID</em> columns are only trimmed.</p>
       </div>
       <label class="sheet" id="sheet-wrap" hidden>Sheet <select id="sheet"></select></label>
     </header>
-    <div class="table-wrap"><table class="columns" id="columns"></table></div>
 
-    <div class="options">
-      <label>Country for phones
-        <select id="opt-country">
-          <option value="CO">Colombia (+57)</option><option value="MX">Mexico (+52)</option>
-          <option value="US">United States (+1)</option><option value="ES">Spain (+34)</option>
-          <option value="AR">Argentina (+54)</option><option value="CL">Chile (+56)</option>
-          <option value="PE">Peru (+51)</option><option value="EC">Ecuador (+593)</option>
-          <option value="GB">United Kingdom (+44)</option><option value="DE">Germany (+49)</option>
-        </select>
-      </label>
-      <label>Dates written as
-        <select id="opt-dates"><option value="auto">Detect per column</option><option value="DMY">Day first (31/12)</option><option value="MDY">Month first (12/31)</option></select>
-      </label>
-      <label>Duplicate rows
-        <select id="opt-dups"><option value="remove">Remove</option><option value="flag">Keep and flag</option><option value="keep">Keep</option></select>
-      </label>
-      <label class="check"><input type="checkbox" id="opt-people" checked> One row per person: flag rows that share an email or phone</label>
-      <label class="check"><input type="checkbox" id="opt-names" checked> Fix name capitalization</label>
-      <label class="check"><input type="checkbox" id="opt-cats" checked> Merge spelling variants in categories</label>
-      <label class="check"><input type="checkbox" id="opt-typos" checked> Fix common email domain typos</label>
+    <div class="review-body">
+      <div class="table-wrap sheet-grid"><table class="columns" id="columns"></table></div>
+
+      <aside class="inspector" aria-label="Cleaning options">
+        <p class="inspector-title">Options</p>
+        <label>Country for phones
+          <select id="opt-country">
+            <option value="CO">Colombia (+57)</option><option value="MX">Mexico (+52)</option>
+            <option value="US">United States (+1)</option><option value="ES">Spain (+34)</option>
+            <option value="AR">Argentina (+54)</option><option value="CL">Chile (+56)</option>
+            <option value="PE">Peru (+51)</option><option value="EC">Ecuador (+593)</option>
+            <option value="GB">United Kingdom (+44)</option><option value="DE">Germany (+49)</option>
+          </select>
+        </label>
+        <label>Dates written as
+          <select id="opt-dates"><option value="auto">Detect per column</option><option value="DMY">Day first (31/12)</option><option value="MDY">Month first (12/31)</option></select>
+        </label>
+        <label>Duplicate rows
+          <select id="opt-dups"><option value="remove">Remove</option><option value="flag">Keep and flag</option><option value="keep">Keep</option></select>
+        </label>
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="opt-people" checked> Flag rows that share an email or phone</label>
+          <label class="check"><input type="checkbox" id="opt-names" checked> Fix name capitalization</label>
+          <label class="check"><input type="checkbox" id="opt-cats" checked> Merge spelling variants in categories</label>
+          <label class="check"><input type="checkbox" id="opt-typos" checked> Fix common email domain typos</label>
+        </div>
+        <div class="inspector-actions">
+          <button type="button" class="btn btn-primary" id="run">Clean data</button>
+          <button type="button" class="btn-link" id="reset">Open another file</button>
+        </div>
+      </aside>
     </div>
-    <div class="actions"><button type="button" class="primary" id="run">Clean data</button><button type="button" class="link" id="reset">Use another file</button></div>
   </section>
 
-  <section id="results" hidden>
-    <div class="results-head">
+  <section class="panel" id="results" hidden>
+    <header class="panel-head">
       <div>
-        <p class="step">Step 3 of 3</p>
-        <h2>Clean file ready</h2>
+        <h2>Results</h2>
+        <p class="caption">Changed cells are tinted; cells that need a human have a red underline. Hover a cell to see what it was.</p>
       </div>
       <div class="downloads">
-        <button type="button" class="primary" data-export="xlsx">Download Excel</button>
-        <button type="button" data-export="csv">CSV</button>
-        <button type="button" data-export="report">Audit (JSON)</button>
+        <button type="button" class="btn btn-primary" data-export="xlsx">Download Excel</button>
+        <button type="button" class="btn" data-export="csv">CSV</button>
+        <button type="button" class="btn" data-export="report">Audit (JSON)</button>
       </div>
-    </div>
-    <div class="kpis" id="kpis"></div>
+    </header>
 
-    <div class="card">
-      <h3>What was fixed</h3>
-      <div class="rules" id="rules"></div>
-    </div>
+    <div class="statusbar" id="kpis"></div>
 
-    <div class="card">
+    <div class="results-body">
       <div class="tabs" role="tablist">
         <button type="button" role="tab" data-tab="data" aria-selected="true">Clean data</button>
         <button type="button" role="tab" data-tab="changes" aria-selected="false">Changes <span id="n-changes"></span></button>
@@ -125,15 +143,18 @@
       <div class="tab" id="tab-changes" hidden></div>
       <div class="tab" id="tab-issues" hidden></div>
     </div>
+
+    <div class="fixes">
+      <p class="inspector-title">What was fixed</p>
+      <div class="rules" id="rules"></div>
+    </div>
   </section>
 
-  <section class="card how">
-    <h2>How it works</h2>
-    <p class="caption">The cleaning engine is a Python package that runs inside the page through <a href="https://pyodide.org">Pyodide</a> (Python compiled to WebAssembly). The same package works from the command line, so a folder of files can be cleaned in one command. Nothing is uploaded: there is no server.</p>
-  </section>
+  <footer class="footer">
+    <p>The cleaning engine is a Python package running inside this page through <a href="https://pyodide.org">Pyodide</a> (Python compiled to WebAssembly). The same package works from the command line. There is no server, so nothing is uploaded.</p>
+    <p>Sample files are synthetic: every name, email and phone number is invented. Built by <a href="https://josemayo16.github.io">Juan José Mayo</a>.</p>
+  </footer>
 </main>
-
-<footer class="wrap footer">Sample files are synthetic: every name, email and phone number is invented.</footer>
 <script src="app.js"></script>
 </body>
 </html>
